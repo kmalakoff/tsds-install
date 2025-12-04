@@ -2,8 +2,15 @@ import spawn from 'cross-spawn-cb';
 import path from 'path';
 import Queue from 'queue-cb';
 import type { Writable } from 'stream';
-import type { CommandCallback, CommandOptions } from 'tsds-lib';
+import { type CommandCallback, type CommandOptions, wrapWorker } from 'tsds-lib';
+import url from 'url';
 import concatWritable from './lib/concatWritable.ts';
+
+const major = +process.versions.node.split('.')[0];
+const version = major > 14 ? 'local' : 'stable';
+const __dirname = path.dirname(typeof __filename === 'undefined' ? url.fileURLToPath(import.meta.url) : __filename);
+const dist = path.join(__dirname, '..');
+const workerWrapper = wrapWorker(path.join(dist, 'cjs', 'command.js'));
 
 const RETRY_MAX = 40;
 const RETRY_DELAY = 3000;
@@ -13,7 +20,7 @@ interface WritableOutput extends Writable {
   output?: string;
 }
 
-export default function command(args: string[], options: CommandOptions, callback: CommandCallback): undefined {
+function worker(args: string[], options: CommandOptions, callback: CommandCallback): undefined {
   const cwd: string = (options.cwd as string) || process.cwd();
   const queue = new Queue(1);
   let count = 1;
@@ -39,4 +46,8 @@ export default function command(args: string[], options: CommandOptions, callbac
   }
   queue.defer(install.bind(null));
   queue.await(callback);
+}
+
+export default function command(args: string[], options: CommandOptions, callback: CommandCallback): undefined {
+  version !== 'local' ? workerWrapper(version, args, options, callback) : worker(args, options, callback);
 }
