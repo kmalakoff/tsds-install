@@ -1,4 +1,5 @@
 import spawn from 'cross-spawn-cb';
+import getopts from 'getopts-compat';
 import path from 'path';
 import Queue from 'queue-cb';
 import type { Writable } from 'stream';
@@ -22,11 +23,19 @@ interface WritableOutput extends Writable {
 
 function worker(args: string[], options: CommandOptions, callback: CommandCallback): undefined {
   const cwd: string = (options.cwd as string) || process.cwd();
+  const opts = getopts(args, { alias: { 'dry-run': 'd' }, boolean: ['dry-run'] });
+  const filteredArgs = args.filter((arg) => arg !== '--dry-run' && arg !== '-d');
+
+  if (opts['dry-run']) {
+    console.log('Dry-run: would run npm install');
+    return callback();
+  }
+
   const queue = new Queue(1);
   let count = 1;
   function install(cb) {
     console.log(`npm install${count > 1 ? ` (${count})` : ''}`);
-    const cp = spawn.crossSpawn('npm', ['install'].concat(args), { encoding: 'utf8', cwd });
+    const cp = spawn.crossSpawn('npm', ['install'].concat(filteredArgs), { encoding: 'utf8', cwd });
     cp.stdout.pipe(process.stdout);
     cp.stderr.pipe(process.stderr);
     const stderr = cp.stderr.pipe(
