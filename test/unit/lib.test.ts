@@ -57,7 +57,7 @@ function addTests(repo) {
         // Since installGitRepo already ran npm install, this should succeed
         install([], { cwd: dest }, (err?: Error): undefined => {
           if (err) {
-            done(err.message);
+            done(err);
             return;
           }
           // Verify node_modules exists
