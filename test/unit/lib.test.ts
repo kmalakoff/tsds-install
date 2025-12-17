@@ -1,4 +1,4 @@
-// remove NODE_OPTIONS from ts-dev-stack
+// remove NODE_OPTIONS to not interfere with tests
 delete process.env.NODE_OPTIONS;
 
 import assert from 'assert';
@@ -57,7 +57,7 @@ function addTests(repo) {
         // Since installGitRepo already ran npm install, this should succeed
         install([], { cwd: dest }, (err?: Error): undefined => {
           if (err) {
-            done(err.message);
+            done(err);
             return;
           }
           // Verify node_modules exists

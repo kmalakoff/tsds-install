@@ -1,9 +1,10 @@
 import spawn from 'cross-spawn-cb';
 import getopts from 'getopts-compat';
+import { wrap } from 'node-version-call';
 import path from 'path';
 import Queue from 'queue-cb';
 import type { Writable } from 'stream';
-import { type CommandCallback, type CommandOptions, wrapWorker } from 'tsds-lib';
+import type { CommandCallback, CommandOptions } from 'tsds-lib';
 import url from 'url';
 import concatWritable from './lib/concatWritable.ts';
 
@@ -11,7 +12,7 @@ const major = +process.versions.node.split('.')[0];
 const version = major > 14 ? 'local' : 'stable';
 const __dirname = path.dirname(typeof __filename === 'undefined' ? url.fileURLToPath(import.meta.url) : __filename);
 const dist = path.join(__dirname, '..');
-const workerWrapper = wrapWorker(path.join(dist, 'cjs', 'command.js'));
+const workerWrapper = wrap(path.join(dist, 'cjs', 'command.js'));
 
 const RETRY_MAX = 40;
 const RETRY_DELAY = 3000;
