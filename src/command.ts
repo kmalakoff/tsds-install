@@ -22,7 +22,7 @@ interface WritableOutput extends Writable {
   output?: string;
 }
 
-function worker(args: string[], options: CommandOptions, callback: CommandCallback): undefined {
+function worker(args: string[], options: CommandOptions, callback: CommandCallback) {
   const cwd: string = (options.cwd as string) || process.cwd();
   const opts = getopts(args, { alias: { 'dry-run': 'd' }, boolean: ['dry-run'] });
   const filteredArgs = args.filter((arg) => arg !== '--dry-run' && arg !== '-d');
@@ -58,6 +58,6 @@ function worker(args: string[], options: CommandOptions, callback: CommandCallba
   queue.await(callback);
 }
 
-export default function command(args: string[], options: CommandOptions, callback: CommandCallback): undefined {
+export default function command(args: string[], options: CommandOptions, callback: CommandCallback): void {
   version !== 'local' ? workerWrapper(version, args, options, callback) : worker(args, options, callback);
 }

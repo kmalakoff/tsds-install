@@ -32,7 +32,7 @@ function addTests(repo) {
     const deps = { ...(modulePackage.dependencies || {}), ...(modulePackage.peerDependencies || {}) };
 
     before((cb) => {
-      installGitRepo(repo, dest, (err?: Error): undefined => {
+      installGitRepo(repo, dest, (err?: Error): void => {
         if (err) {
           cb(err);
           return;
@@ -55,7 +55,7 @@ function addTests(repo) {
       it('install', (done) => {
         // tsds-install runs npm install in the target directory
         // Since installGitRepo already ran npm install, this should succeed
-        install([], { cwd: dest }, (err?: Error): undefined => {
+        install([], { cwd: dest }, (err?: Error): void => {
           if (err) {
             done(err);
             return;
