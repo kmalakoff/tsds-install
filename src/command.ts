@@ -1,6 +1,6 @@
 import spawn from 'cross-spawn-cb';
 import getopts from 'getopts-compat';
-import { wrap } from 'node-version-call';
+import { bind } from 'node-version-call';
 import path from 'path';
 import Queue from 'queue-cb';
 import type { Writable } from 'stream';
@@ -9,10 +9,8 @@ import url from 'url';
 import concatWritable from './lib/concatWritable.ts';
 
 const major = +process.versions.node.split('.')[0];
-const version = major > 14 ? 'local' : 'stable';
 const __dirname = path.dirname(typeof __filename === 'undefined' ? url.fileURLToPath(import.meta.url) : __filename);
 const dist = path.join(__dirname, '..');
-const workerWrapper = wrap(path.join(dist, 'cjs', 'command.js'));
 
 const RETRY_MAX = 40;
 const RETRY_DELAY = 3000;
@@ -22,7 +20,7 @@ interface WritableOutput extends Writable {
   output?: string;
 }
 
-function worker(args: string[], options: CommandOptions, callback: CommandCallback) {
+function run(args: string[], options: CommandOptions, callback: CommandCallback) {
   const cwd: string = (options.cwd as string) || process.cwd();
   const opts = getopts(args, { alias: { 'dry-run': 'd' }, boolean: ['dry-run'] });
   const filteredArgs = args.filter((arg) => arg !== '--dry-run' && arg !== '-d');
@@ -58,6 +56,8 @@ function worker(args: string[], options: CommandOptions, callback: CommandCallba
   queue.await(callback);
 }
 
+const worker = major >= 20 ? run : bind('>=20', path.join(dist, 'cjs', 'command.js'), { callbacks: true });
+
 export default function command(args: string[], options: CommandOptions, callback: CommandCallback): void {
-  version !== 'local' ? workerWrapper(version, args, options, callback) : worker(args, options, callback);
+  worker(args, options, callback);
 }
