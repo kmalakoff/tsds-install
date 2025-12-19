@@ -42,34 +42,23 @@ function run(args: string[], options: CommandOptions, callback: CommandCallback)
       })
     ) as WritableOutput;
 
-    stderr.output = ''; // ensure defined
-
     spawn.worker(cp, { encoding: 'utf8' }, (err) => {
-      if (!err) return cb(null, { ok: true });
+      if (!err) return cb();
 
       const msg = (stderr.output || '').toString();
-      if (RETRY_ERRORS.test(msg)) return cb(null, { ok: false, retry: true, err });
+      if (RETRY_ERRORS.test(msg)) {
+        if (attempt >= RETRY_MAX) return cb(new Error(`Failed to install ${path.basename(cwd)}`)); // out of attempts
+        setTimeout(() => {
+          spawn('npm', ['cache', 'clean', '-f'], { stdio: 'inherit', cwd }, (err) => {
+            err ? cb(err) : install(attempt + 1, cb);
+          });
+        }, RETRY_DELAY);
+      }
       cb(err);
     });
   }
 
-  function run(attempt, cb) {
-    install(attempt, (err, res) => {
-      if (err) return cb(err); // fatal
-      if (res && res.ok) return cb(); // success
-      if (!res || !res.retry) return cb(res && res.err ? res.err : new Error('Install failed'));
-      if (attempt >= RETRY_MAX) return cb(new Error(`Failed to install ${path.basename(cwd)}`)); // out of attempts
-
-      setTimeout(() => {
-        spawn('npm', ['cache', 'clean', '-f'], { stdio: 'inherit', cwd }, (err) => {
-          if (err) return cb(err);
-          run(attempt + 1, cb); // ✅ important fix
-        });
-      }, RETRY_DELAY);
-    });
-  }
-
-  run(1, callback);
+  install(1, callback);
 }
 
 const worker = major >= 20 ? run : bind('>=20', path.join(dist, 'cjs', 'command.js'), { callbacks: true });
