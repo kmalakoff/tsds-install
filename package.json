@@ -39,9 +39,9 @@
     "version": "tsds version"
   },
   "dependencies": {
-    "cross-spawn-cb": "^3.0.0",
-    "getopts-compat": "^2.2.6",
-    "node-version-call": "^2.1.0",
+    "cross-spawn-cb": "^3.1.0",
+    "getopts-compat": "^2.2.5",
+    "node-version-call": "^2.2.2",
     "queue-cb": "^1.6.3",
     "readable-stream": "^2.0.2",
     "tsds-lib": "^1.21.1"
@@ -56,7 +56,7 @@
     "short-hash": "^1.0.0",
     "ts-dev-stack": "*",
     "tsds-config": "*",
-    "tsds-lib-test": "^1.20.0"
+    "tsds-lib-test": "^1.20.2"
   },
   "engines": {
     "node": ">=0.8"
