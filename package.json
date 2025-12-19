@@ -41,7 +41,7 @@
   "dependencies": {
     "cross-spawn-cb": "^3.1.0",
     "getopts-compat": "^2.2.5",
-    "node-version-call": "^2.2.2",
+    "node-version-call": "^3.0.0",
     "queue-cb": "^1.6.3",
     "readable-stream": "^2.0.2",
     "tsds-lib": "^1.21.1"
