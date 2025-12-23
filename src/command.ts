@@ -61,7 +61,9 @@ function run(args: string[], options: CommandOptions, callback: CommandCallback)
   install(1, callback);
 }
 
-const worker = major >= 20 ? run : bind('>=20', path.join(dist, 'cjs', 'command.js'), { callbacks: true });
+type commandFunction = (args: string[], options: CommandOptions, callback: CommandCallback) => void;
+
+const worker = (major >= 20 ? run : bind('>=20', path.join(dist, 'cjs', 'command.js'), { callbacks: true })) as commandFunction;
 
 export default function command(args: string[], options: CommandOptions, callback: CommandCallback): void {
   worker(args, options, callback);
