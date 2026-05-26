@@ -22,7 +22,7 @@ const __dirname = path.dirname(typeof __filename !== 'undefined' ? __filename : 
 
 const GITS = ['https://github.com/kmalakoff/fetch-http-message.git'];
 
-function addTests(repo) {
+function addTests(repo: string) {
   const repoName = path.basename(repo, path.extname(repo));
   describe(repoName, () => {
     const dest = path.join(tmpdir(), 'tsds-install', shortHash(process.cwd()), repoName);
@@ -33,10 +33,7 @@ function addTests(repo) {
 
     before((cb) => {
       installGitRepo(repo, dest, (err?: Error): void => {
-        if (err) {
-          cb(err);
-          return;
-        }
+        if (err) return cb(err);
 
         const queue = new Queue();
         queue.defer(linkModule.bind(null, modulePath, nodeModules));
@@ -56,10 +53,8 @@ function addTests(repo) {
         // tsds-install runs npm install in the target directory
         // Since installGitRepo already ran npm install, this should succeed
         install([], { cwd: dest }, (err?: Error): void => {
-          if (err) {
-            done(err);
-            return;
-          }
+          if (err) return done(err);
+
           // Verify node_modules exists
           assert.ok(fs.existsSync(nodeModules), 'node_modules should exist');
           done();
