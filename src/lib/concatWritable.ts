@@ -3,7 +3,7 @@ import { Writable } from '../compat.ts';
 export type Callback = (lines: Buffer) => void;
 
 export default function concatWritable(callback: Callback): NodeJS.WritableStream {
-  const chunks = [];
+  const chunks: Buffer[] = [];
   const stream = new Writable({
     write: (chunk, _encoding, next) => {
       chunks.push(chunk);
