@@ -29,7 +29,7 @@ function run(args: string[], options: CommandOptions, callback: CommandCallback)
     return callback();
   }
 
-  function install(attempt: number, cb: (err?: Error) => void) {
+  function install(attempt: number, cb: (err?: Error | null) => void) {
     console.log(`npm install${attempt > 1 ? ` (${attempt})` : ''}`);
 
     const cp = spawn.crossSpawn('npm', ['install'].concat(filteredArgs), { encoding: 'utf8', cwd });
