@@ -29,14 +29,14 @@ function run(args: string[], options: CommandOptions, callback: CommandCallback)
     return callback();
   }
 
-  function install(attempt, cb) {
+  function install(attempt: number, cb: (err?: Error) => void) {
     console.log(`npm install${attempt > 1 ? ` (${attempt})` : ''}`);
 
     const cp = spawn.crossSpawn('npm', ['install'].concat(filteredArgs), { encoding: 'utf8', cwd });
-    cp.stdout.pipe(process.stdout);
-    cp.stderr.pipe(process.stderr);
+    if (cp.stdout) cp.stdout.pipe(process.stdout);
+    if (cp.stderr) cp.stderr.pipe(process.stderr);
 
-    const stderr = cp.stderr.pipe(
+    const stderr = cp.stderr?.pipe(
       concatWritable((output) => {
         (stderr as WritableOutput).output = output.toString();
       })
