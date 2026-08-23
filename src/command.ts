@@ -29,10 +29,18 @@ function run(args: string[], options: CommandOptions, callback: CommandCallback)
     return callback();
   }
 
+  // npm run exports npm config as npm_config_* vars; an inherited allow-scripts
+  // is command-line scoped, which npm rejects for project installs.
+  function installEnv(): NodeJS.ProcessEnv {
+    const env = { ...process.env };
+    delete env.npm_config_allow_scripts;
+    return env;
+  }
+
   function install(attempt: number, cb: (err?: Error | null) => void) {
     console.log(`npm install${attempt > 1 ? ` (${attempt})` : ''}`);
 
-    const cp = spawn.crossSpawn('npm', ['install'].concat(filteredArgs), { encoding: 'utf8', cwd });
+    const cp = spawn.crossSpawn('npm', ['install'].concat(filteredArgs), { encoding: 'utf8', cwd, env: installEnv() });
     if (cp.stdout) cp.stdout.pipe(process.stdout);
     if (cp.stderr) cp.stderr.pipe(process.stderr);
 
