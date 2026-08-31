@@ -1,1 +1,1 @@
-ignores: ["node-version-use", "ts-dev-stack", "tsds-install", "readable-stream", "ts-swc-loaders"]
+ignores: ["tsds-install", "node-version-use", "ts-dev-stack", "readable-stream", "ts-swc-loaders"]
