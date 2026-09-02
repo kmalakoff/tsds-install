@@ -41,7 +41,7 @@
   "dependencies": {
     "cross-spawn-cb": "*",
     "queue-cb": "*",
-    "readable-stream": "^4.7.0",
+    "readable-stream": "^2.3.8",
     "tsds-lib": "*"
   },
   "devDependencies": {
