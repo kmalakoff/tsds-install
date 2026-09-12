@@ -1,8 +1,12 @@
-import StreamCompat from 'readable-stream';
 import Stream from 'stream';
 
 const major = +process.versions.node.split('.')[0];
-const Writable = major > 0 ? Stream.Writable : (StreamCompat.Writable as typeof Stream.Writable);
+let Writable: typeof Stream.Writable;
+if (major > 0) {
+  Writable = Stream.Writable;
+} else {
+  Writable = require('readable-stream').Writable;
+}
 
 export type Callback = (lines: Buffer) => undefined;
 
